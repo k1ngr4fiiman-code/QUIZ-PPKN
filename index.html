@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz PPKn - Rafiko Iman</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    background:#05070a;
+    color:white;
+    font-family:Arial,sans-serif;
+    overflow:hidden;
+}
+
+.screen{
+    position:fixed;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    background:
+      radial-gradient(circle at center,#132b35 0%,#071016 35%,#020304 80%);
+}
+
+.hidden{
+    display:none!important;
+}
+
+/* INTRO */
+
+.logo{
+    font-size:48px;
+    font-weight:900;
+    letter-spacing:5px;
+    text-align:center;
+    animation:zoom 1.4s forwards,glow 1.5s infinite alternate;
+}
+
+.introSub{
+    margin-top:15px;
+    letter-spacing:4px;
+    opacity:0;
+    animation:fade 1s 1s forwards;
+}
+
+.creatorSmall{
+    font-size:18px;
+    letter-spacing:5px;
+    animation:fade 1s forwards;
+}
+
+.creator{
+    margin-top:20px;
+    font-size:40px;
+    font-weight:bold;
+    letter-spacing:4px;
+    animation:creator 1.5s forwards,glow 1.5s 1.5s infinite alternate;
+}
+
+.loading{
+    position:absolute;
+    bottom:45px;
+    width:230px;
+    height:4px;
+    background:#222;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.loading:after{
+    content:"";
+    display:block;
+    width:0;
+    height:100%;
+    background:#00eaff;
+    animation:load 4s linear forwards;
+}
+
+/* MENU */
+
+.menuTitle{
+    font-size:40px;
+    font-weight:900;
+    margin-bottom:8px;
+}
+
+.creatorMenu{
+    color:#00eaff;
+    margin-bottom:30px;
+}
+
+.btn{
+    width:280px;
+    padding:15px;
+    margin:7px;
+    border:2px solid #00eaff;
+    border-radius:12px;
+    background:#07151b;
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.btn:active{
+    transform:scale(.95);
+    background:#00eaff;
+    color:#000;
+}
+
+/* LEVEL */
+
+.levelHeader{
+    width:92%;
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:18px;
+    color:#00eaff;
+    font-weight:bold;
+}
+
+.levelGrid{
+    width:92%;
+    max-width:500px;
+    height:65vh;
+    overflow-y:auto;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:9px;
+    padding:5px;
+}
+
+.levelBtn{
+    height:55px;
+    border:1px solid #00eaff;
+    border-radius:9px;
+    background:#081319;
+    color:white;
+    font-weight:bold;
+}
+
+.levelBtn.locked{
+    opacity:.35;
+}
+
+.levelBtn.current{
+    background:#00eaff;
+    color:#000;
+}
+
+/* QUIZ */
+
+.quizBox{
+    width:92%;
+    max-width:520px;
+}
+
+.quizTop{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:15px;
+    color:#00eaff;
+}
+
+.progress{
+    width:100%;
+    height:7px;
+    background:#222;
+    border-radius:10px;
+    margin-bottom:20px;
+}
+
+.progressBar{
+    height:100%;
+    width:0%;
+    background:#00eaff;
+    border-radius:10px;
+    transition:.3s;
+}
+
+.question{
+    background:#0b151b;
+    border:1px solid #164957;
+    border-radius:15px;
+    padding:20px;
+    font-size:20px;
+    font-weight:bold;
+    line-height:1.4;
+    margin-bottom:15px;
+}
+
+.answer{
+    width:100%;
+    text-align:left;
+    padding:14px;
+    margin:6px 0;
+    border-radius:10px;
+    border:1px solid #235563;
+    background:#091116;
+    color:white;
+    font-size:16px;
+}
+
+.answer.correct{
+    background:#0d6b3c;
+    border-color:#00ff91;
+}
+
+.answer.wrong{
+    background:#6b1515;
+    border-color:#ff4545;
+}
+
+.answer:disabled{
+    opacity:1;
+}
+
+.next{
+    width:100%;
+    margin-top:12px;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:#00eaff;
+    color:#000;
+    font-size:17px;
+    font-weight:bold;
+}
+
+/* RESULT */
+
+.resultTitle{
+    font-size:38px;
+    font-weight:bold;
+    margin-bottom:20px;
+}
+
+.resultScore{
+    font-size:25px;
+    margin-bottom:25px;
+    text-align:center;
+}
+
+@keyframes zoom{
+    from{transform:scale(.2);opacity:0}
+    to{transform:scale(1);opacity:1}
+}
+
+@keyframes fade{
+    to{opacity:1}
+}
+
+@keyframes creator{
+    from{transform:translateY(40px);opacity:0}
+    to{transform:translateY(0);opacity:1}
+}
+
+@keyframes glow{
+    from{text-shadow:0 0 5px #00eaff}
+    to{text-shadow:0 0 10px #00eaff,0 0 30px #00eaff}
+}
+
+@keyframes load{
+    to{width:100%}
+}
+</style>
+</head>
+
+<body>
+
+<!-- INTRO 1 -->
+<div id="intro1" class="screen">
+
+    <div class="logo">QUIZ PPKn</div>
+
+    <div class="introSub">
+        UJI PENGETAHUANMU
+    </div>
+
+    <div class="loading"></div>
+
+</div>
+
+
+<!-- INTRO 2 -->
+<div id="intro2" class="screen hidden">
+
+    <div class="creatorSmall">
+        PENCIPTA GAME
+    </div>
+
+    <div class="creator">
+        RAFIKO IMAN
+    </div>
+
+</div>
+
+
+<!-- MENU -->
+<div id="menu" class="screen hidden">
+
+    <div class="menuTitle">🇮🇩 QUIZ PPKn</div>
+
+    <div class="creatorMenu">
+        200 LEVEL • 10 SOAL
+    </div>
+
+    <button class="btn" onclick="mulaiQuiz()">
+        ▶ MULAI QUIZ
+    </button>
+
+    <button class="btn" onclick="showLevels()">
+        📚 PILIH LEVEL
+    </button>
+
+    <button class="btn" onclick="showPrestasi()">
+        🏆 PRESTASI
+    </button>
+
+</div>
+
+
+<!-- LEVEL -->
+<div id="levels" class="screen hidden">
+
+    <div class="levelHeader">
+        <span>PILIH LEVEL</span>
+        <span id="levelProgress">1 / 200</span>
+    </div>
+
+    <div id="levelGrid" class="levelGrid"></div>
+
+    <button class="btn" onclick="backMenu()">
+        ← KEMBALI
+    </button>
+
+</div>
+
+
+<!-- QUIZ -->
+<div id="quiz" class="screen hidden">
+
+    <div class="quizBox">
+
+        <div class="quizTop">
+            <span id="levelText">LEVEL 1</span>
+            <span id="questionText">1 / 10</span>
+        </div>
+
+        <div class="progress">
+            <div id="progressBar" class="progressBar"></div>
+        </div>
+
+        <div id="question" class="question"></div>
+
+        <div id="answers"></div>
+
+        <button id="nextBtn"
+                class="next hidden"
+                onclick="nextQuestion()">
+            SOAL BERIKUTNYA →
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- RESULT -->
+<div id="result" class="screen hidden">
+
+    <div class="resultTitle">
+        LEVEL SELESAI!
+    </div>
+
+    <div id="resultScore" class="resultScore"></div>
+
+    <button id="continueBtn"
+            class="btn"
+            onclick="continueGame()">
+        LANJUT LEVEL
+    </button>
+
+    <button class="btn" onclick="showLevels()">
+        📚 PILIH LEVEL
+    </button>
+
+    <button class="btn" onclick="backMenu()">
+        🏠 MENU UTAMA
+    </button>
+
+</div>
+
+
+<script>
+
+/* =========================
+   DATA GAME
+========================= */
+
+let unlockedLevel =
+    Number(localStorage.getItem("ppknLevel")) || 1;
+
+let currentLevel = 1;
+let currentQuestion = 0;
+let score = 0;
+let quizQuestions = [];
+
+
+/* =========================
+   BANK SOAL PPKn
+========================= */
+
+const questionBank = [
+
+{
+ q:"Apa dasar negara Indonesia?",
+ a:["UUD 1945","Pancasila","Bhinneka Tunggal Ika","NKRI"],
+ c:1
+},
+
+{
+ q:"Berapa jumlah sila dalam Pancasila?",
+ a:["3","4","5","6"],
+ c:2
+},
+
+{
+ q:"Lambang negara Indonesia adalah?",
+ a:["Garuda Pancasila","Burung Elang","Banteng","Merpati"],
+ c:0
+},
+
+{
+ q:"Semboyan bangsa Indonesia adalah?",
+ a:["Tut Wuri Handayani","Bhinneka Tunggal Ika","Indonesia Raya","Merdeka"],
+ c:1
+},
+
+{
+ q:"Apa arti Bhinneka Tunggal Ika?",
+ a:["Bersatu kita teguh",
+    "Berbeda-beda tetapi tetap satu",
+    "Satu bangsa satu bahasa",
+    "Indonesia negara kuat"],
+ c:1
+},
+
+{
+ q:"Sila pertama Pancasila adalah?",
+ a:["Kemanusiaan yang Adil dan Beradab",
+    "Ketuhanan Yang Maha Esa",
+    "Persatuan Indonesia",
+    "Keadilan Sosial"],
+ c:1
+},
+
+{
+ q:"Sila kedua Pancasila berbunyi?",
+ a:["Persatuan Indonesia",
+    "Keadilan Sosial bagi Seluruh Rakyat Indonesia",
+    "Kemanusiaan yang Adil dan Beradab",
+    "Ketuhanan Yang Maha Esa"],
+ c:2
+},
+
+{
+ q:"Sila ketiga Pancasila adalah?",
+ a:["Persatuan Indonesia",
+    "Keadilan Sosial",
+    "Kerakyatan yang Dipimpin oleh Hikmat Kebijaksanaan",
+    "Ketuhanan Yang Maha Esa"],
+ c:0
+},
+
+{
+ q:"Sila keempat Pancasila berkaitan dengan?",
+ a:["Musyawarah",
+    "Keagamaan",
+    "Keadilan sosial",
+    "Persatuan"],
+ c:0
+},
+
+{
+ q:"Sila kelima Pancasila berbunyi?",
+ a:["Persatuan Indonesia",
+    "Keadilan Sosial bagi Seluruh Rakyat Indonesia",
+    "Ketuhanan Yang Maha Esa",
+    "Kemanusiaan yang Adil dan Beradab"],
+ c:1
+},
+
+{
+ q:"UUD 1945 merupakan?",
+ a:["Dasar hukum tertinggi negara",
+    "Lagu nasional",
+    "Lambang negara",
+    "Semboyan negara"],
+ c:0
+},
+
+{
+ q:"Indonesia adalah negara?",
+ a:["Kerajaan","Kesatuan","Koloni","Federasi"],
+ c:1
+},
+
+{
+ q:"NKRI adalah singkatan dari?",
+ a:["Negara Kesatuan Republik Indonesia",
+    "Negara Kerajaan Republik Indonesia",
+    "Negara Kebangsaan Republik Indonesia",
+    "Negara Kesatuan Rakyat Indonesia"],
+ c:0
+},
+
+{
+ q:"Contoh kewajiban siswa di sekolah adalah?",
+ a:["Mendapat nilai",
+    "Menaati tata tertib",
+    "Mendapat hadiah",
+    "Memilih guru"],
+ c:1
+},
+
+{
+ q:"Contoh hak siswa adalah?",
+ a:["Belajar dengan baik",
+    "Menaati aturan",
+    "Mendapat pendidikan",
+    "Membersihkan kelas"],
+ c:2
+},
+
+{
+ q:"Musyawarah dilakukan untuk mencapai?",
+ a:["Kemenangan",
+    "Mufakat",
+    "Perselisihan",
+    "Hukuman"],
+ c:1
+},
+
+{
+ q:"Gotong royong mencerminkan sikap?",
+ a:["Individualisme",
+    "Kerja sama",
+    "Persaingan",
+    "Egoisme"],
+ c:1
+},
+
+{
+ q:"Menghormati perbedaan agama merupakan sikap?",
+ a:["Toleransi",
+    "Egoisme",
+    "Diskriminasi",
+    "Permusuhan"],
+ c:0
+},
+
+{
+ q:"Contoh sikap persatuan adalah?",
+ a:["Mengejek suku lain",
+    "Bekerja sama tanpa membeda-bedakan",
+    "Memaksakan pendapat",
+    "Memilih teman berdasarkan suku"],
+ c:1
+},
+
+{
+ q:"Bahasa persatuan Indonesia adalah?",
+ a:["Bahasa Jawa",
+    "Bahasa Melayu",
+    "Bahasa Indonesia",
+    "Bahasa daerah"],
+ c:2
+},
+
+{
+ q:"Hari Kemerdekaan Indonesia diperingati setiap?",
+ a:["1 Juni",
+    "17 Agustus",
+    "28 Oktober",
+    "10 November"],
+ c:1
+},
+
+{
+ q:"Proklamasi Kemerdekaan Indonesia dibacakan pada tahun?",
+ a:["1942","1945","1950","1955"],
+ c:1
+},
+
+{
+ q:"Tokoh yang membacakan Proklamasi Kemerdekaan adalah?",
+ a:["Soekarno",
+    "Ki Hajar Dewantara",
+    "Mohammad Yamin",
+    "Sutan Sjahrir"],
+ c:0
+},
+
+{
+ q:"Wakil Presiden pertama Indonesia adalah?",
+ a:["Mohammad Hatta",
+    "Soekarno",
+    "Soepomo",
+    "Ahmad Yani"],
+ c:0
+},
+
+{
+ q:"Lagu kebangsaan Indonesia adalah?",
+ a:["Garuda Pancasila",
+    "Indonesia Raya",
+    "Bagimu Negeri",
+    "Hari Merdeka"],
+ c:1
+},
+
+{
+ q:"Bendera negara Indonesia berwarna?",
+ a:["Merah Putih",
+    "Putih Biru",
+    "Merah Kuning",
+    "Hijau Putih"],
+ c:0
+},
+
+{
+ q:"Warna merah pada bendera Indonesia melambangkan?",
+ a:["Kesucian",
+    "Keberanian",
+    "Kedamaian",
+    "Keadilan"],
+ c:1
+},
+
+{
+ q:"Warna putih pada bendera Indonesia melambangkan?",
+ a:["Kesucian",
+    "Keberanian",
+    "Kekuatan",
+    "Persatuan"],
+ c:0
+},
+
+{
+ q:"Contoh norma kesopanan adalah?",
+ a:["Menghormati orang lain",
+    "Membayar pajak",
+    "Tidak mencuri",
+    "Beribadah"],
+ c:0
+},
+
+{
+ q:"Aturan yang berasal dari Tuhan disebut norma?",
+ a:["Kesopanan",
+    "Agama",
+    "Hukum",
+    "Kesusilaan"],
+ c:1
+},
+
+{
+ q:"Peraturan yang dibuat oleh negara disebut?",
+ a:["Norma hukum",
+    "Norma kesopanan",
+    "Norma adat",
+    "Norma pribadi"],
+ c:0
+},
+
+{
+ q:"Sikap memaksakan kehendak bertentangan dengan?",
+ a:["Musyawarah",
+    "Gotong royong",
+    "Kebersihan",
+    "Kedisiplinan"],
+ c:0
+},
+
+{
+ q:"Menghargai teman yang berbeda suku merupakan contoh?",
+ a:["Diskriminasi",
+    "Toleransi",
+    "Egoisme",
+    "Permusuhan"],
+ c:1
+},
+
+{
+ q:"Pemilihan umum dilaksanakan berdasarkan asas?",
+ a:["Luber Jurdil",
+    "Cepat dan mudah",
+    "Bebas tanpa aturan",
+    "Rahasia saja"],
+ c:0
+},
+
+{
+ q:"Demokrasi berarti pemerintahan dari?",
+ a:["Rakyat",
+    "Raja",
+    "Tentara",
+    "Pengusaha"],
+ c:0
+},
+
+{
+ q:"Contoh menjaga persatuan di sekolah adalah?",
+ a:["Bertengkar",
+    "Bekerja sama membersihkan kelas",
+    "Mengejek teman",
+    "Membentuk kelompok berdasarkan suku"],
+ c:1
+},
+
+{
+ q:"Sikap adil berarti?",
+ a:["Memihak teman",
+    "Memperlakukan orang secara semestinya",
+    "Mengutamakan diri sendiri",
+    "Menghindari semua orang"],
+ c:1
+},
+
+{
+ q:"Hak dan kewajiban harus dilaksanakan secara?",
+ a:["Seimbang",
+    "Terpisah",
+    "Sembarangan",
+    "Terpaksa"],
+ c:0
+},
+
+{
+ q:"Contoh cinta tanah air adalah?",
+ a:["Merusak fasilitas umum",
+    "Menjaga lingkungan dan budaya bangsa",
+    "Mengejek bangsa lain",
+    "Melanggar aturan"],
+ c:1
+},
+
+{
+ q:"Sikap rela berkorban merupakan bagian dari?",
+ a:["Semangat kebangsaan",
+    "Individualisme",
+    "Egoisme",
+    "Permusuhan"],
+ c:0
+},
+
+{
+ q:"Indonesia memiliki banyak suku dan budaya. Hal ini merupakan?",
+ a:["Kelemahan",
+    "Kekayaan bangsa",
+    "Masalah",
+    "Ancaman pasti"],
+ c:1
+},
+
+{
+ q:"Jika berbeda pendapat sebaiknya kita?",
+ a:["Marah",
+    "Bermusyawarah",
+    "Memaksa",
+    "Pergi"],
+ c:1
+},
+
+{
+ q:"Menghormati hasil musyawarah merupakan sikap?",
+ a:["Demokratis",
+    "Egois",
+    "Tidak peduli",
+    "Individualis"],
+ c:0
+},
+
+{
+ q:"Menjaga fasilitas umum merupakan kewajiban?",
+ a:["Masyarakat",
+    "Satu orang saja",
+    "Pemerintah saja",
+    "Anak-anak saja"],
+ c:0
+},
+
+{
+ q:"Contoh pelanggaran hak orang lain adalah?",
+ a:["Menghormati teman",
+    "Mengganggu orang lain beribadah",
+    "Membantu teman",
+    "Bekerja sama"],
+ c:1
+},
+
+{
+ q:"Persatuan dapat memperkuat?",
+ a:["Perpecahan",
+    "Keutuhan bangsa",
+    "Permusuhan",
+    "Konflik"],
+ c:1
+},
+
+{
+ q:"Salah satu tujuan negara Indonesia adalah?",
+ a:["Melindungi segenap bangsa Indonesia",
+    "Menguasai negara lain",
+    "Menghapus budaya",
+    "Membatasi pendidikan"],
+ c:0
+},
+
+{
+ q:"UUD 1945 disahkan pada?",
+ a:["18 Agustus 1945",
+    "17 Agustus 1945",
+    "1 Juni 1945",
+    "28 Oktober 1928"],
+ c:0
+},
+
+{
+ q:"Sumpah Pemuda terjadi pada?",
+ a:["1928",
+    "1945",
+    "1949",
+    "1950"],
+ c:0
+},
+
+{
+ q:"Salah satu isi Sumpah Pemuda berkaitan dengan?",
+ a:["Satu tanah air",
+    "Satu agama",
+    "Satu pekerjaan",
+    "Satu sekolah"],
+ c:0
+},
+
+{
+ q:"Contoh sikap nasionalisme adalah?",
+ a:["Bangga menggunakan produk dalam negeri",
+    "Membenci budaya sendiri",
+    "Merusak simbol negara",
+    "Tidak peduli bangsa"],
+ c:0
+},
+
+{
+ q:"Keadilan sosial merupakan sila ke?",
+ a:["1","2","3","5"],
+ c:3
+}
+
+];
+
+
+/* =========================
+   UTILITAS
+========================= */
+
+function hideAll(){
+
+    document.querySelectorAll(".screen")
+    .forEach(x=>x.classList.add("hidden"));
+
+}
+
+function shuffle(array){
+
+    return [...array].sort(()=>Math.random()-0.5);
+
+}
+
+
+/* =========================
+   INTRO
+========================= */
+
+setTimeout(()=>{
+
+    intro1.classList.add("hidden");
+    intro2.classList.remove("hidden");
+
+},4500);
+
+
+setTimeout(()=>{
+
+    intro2.classList.add("hidden");
+    menu.classList.remove("hidden");
+
+},7500);
+
+
+/* =========================
+   MENU
+========================= */
+
+function mulaiQuiz(){
+
+    startLevel(unlockedLevel);
+
+}
+
+
+function showLevels(){
+
+    hideAll();
+    levels.classList.remove("hidden");
+
+    createLevels();
+
+}
+
+
+function backMenu(){
+
+    hideAll();
+    menu.classList.remove("hidden");
+
+}
+
+
+function showPrestasi(){
+
+    alert(
+        "🏆 PRESTASI\n\n"+
+        "Level terbuka: "+unlockedLevel+" / 200\n\n"+
+        "Terus bermain untuk membuka semua level!"
+    );
+
+}
+
+
+/* =========================
+   LEVEL
+========================= */
+
+function createLevels(){
+
+    const grid=document.getElementById("levelGrid");
+
+    grid.innerHTML="";
+
+    document.getElementById("levelProgress").innerText=
+        unlockedLevel+" / 200";
+
+    for(let i=1;i<=200;i++){
+
+        const btn=document.createElement("button");
+
+        btn.className="levelBtn";
+
+        if(i>unlockedLevel){
+            btn.classList.add("locked");
+            btn.innerText="🔒 "+i;
+            btn.onclick=()=>{
+                alert("🔒 Level "+i+" masih terkunci!");
+            };
+        }else{
+
+            if(i===unlockedLevel)
+                btn.classList.add("current");
+
+            btn.innerText="LEVEL "+i;
+
+            btn.onclick=()=>{
+                startLevel(i);
+            };
+
+        }
+
+        grid.appendChild(btn);
+
+    }
+
+}
+
+
+/* =========================
+   MULAI LEVEL
+========================= */
+
+function startLevel(level){
+
+    currentLevel=level;
+    currentQuestion=0;
+    score=0;
+
+    /*
+      Ambil 10 soal secara acak.
+      Kalau bank soal belum sampai 10,
+      tetap aman karena jumlah soal cukup banyak.
+    */
+
+    quizQuestions=shuffle(questionBank).slice(0,10);
+
+    hideAll();
+    quiz.classList.remove("hidden");
+
+    loadQuestion();
+
+}
+
+
+/* =========================
+   LOAD SOAL
+========================= */
+
+function loadQuestion(){
+
+    const data=quizQuestions[currentQuestion];
+
+    document.getElementById("levelText").innerText=
+        "LEVEL "+currentLevel;
+
+    document.getElementById("questionText").innerText=
+        (currentQuestion+1)+" / 10";
+
+    document.getElementById("progressBar").style.width=
+        ((currentQuestion)/10*100)+"%";
+
+    document.getElementById("question").innerText=
+        data.q;
+
+    const answers=document.getElementById("answers");
+
+    answers.innerHTML="";
+
+    document.getElementById("nextBtn")
+        .classList.add("hidden");
+
+    data.a.forEach((answer,index)=>{
+
+        const btn=document.createElement("button");
+
+        btn.className="answer";
+
+        btn.innerText=
+            String.fromCharCode(65+index)+". "+answer;
+
+        btn.onclick=()=>{
+            checkAnswer(btn,index);
+        };
+
+        answers.appendChild(btn);
+
+    });
+
+}
+
+
+/* =========================
+   JAWABAN
+========================= */
+
+function checkAnswer(button,index){
+
+    const correct=
+        quizQuestions[currentQuestion].c;
+
+    const buttons=
+        document.querySelectorAll(".answer");
+
+    buttons.forEach(btn=>{
+        btn.disabled=true;
+    });
+
+    if(index===correct){
+
+        button.classList.add("correct");
+        score++;
+
+    }else{
+
+        button.classList.add("wrong");
+        buttons[correct].classList.add("correct");
+
+    }
+
+    document.getElementById("nextBtn")
+        .classList.remove("hidden");
+
+}
+
+
+/* =========================
+   SOAL BERIKUTNYA
+========================= */
+
+function nextQuestion(){
+
+    currentQuestion++;
+
+    if(currentQuestion>=10){
+
+        finishLevel();
+
+    }else{
+
+        loadQuestion();
+
+    }
+
+}
+
+
+/* =========================
+   SELESAI LEVEL
+========================= */
+
+function finishLevel(){
+
+    hideAll();
+    result.classList.remove("hidden");
+
+    document.getElementById("resultScore").innerHTML=
+        "Kamu mendapat<br><br>"+
+        "<b>"+score+" / 10</b><br><br>"+
+        (score>=7
+        ? "🎉 LEVEL BERHASIL!"
+        : "❌ BELUM LULUS");
+
+    const continueBtn=
+        document.getElementById("continueBtn");
+
+    if(score>=7){
+
+        if(currentLevel===unlockedLevel &&
+           unlockedLevel<200){
+
+            unlockedLevel++;
+
+            localStorage.setItem(
+                "ppknLevel",
+                unlockedLevel
+            );
+
+        }
+
+        if(currentLevel<200){
+
+            continueBtn.classList.remove("hidden");
+            continueBtn.innerText=
+                "🚀 LEVEL "+(currentLevel+1);
+
+        }else{
+
+            continueBtn.classList.add("hidden");
+
+            document.getElementById("resultScore")
+            .innerHTML=
+                "🏆 SELAMAT!<br><br>"+
+                "KAMU MENYELESAIKAN<br>"+
+                "<b>200 LEVEL PPKn!</b>";
+
+        }
+
+    }else{
+
+        continueBtn.classList.remove("hidden");
+        continueBtn.innerText="🔄 ULANGI LEVEL";
+
+    }
+
+}
+
+
+/* =========================
+   LANJUT / ULANG
+========================= */
+
+function continueGame(){
+
+    if(score>=7 && currentLevel<200){
+
+        startLevel(currentLevel+1);
+
+    }else{
+
+        startLevel(currentLevel);
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
